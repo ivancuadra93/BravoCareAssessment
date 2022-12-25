@@ -1,7 +1,7 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 
-const QueryButton = ({queryNumber}) => {
+const QueryButton = ({ queryNumber }) => {
   function getQuery() {
     fetch('/getQuery', {
       method: 'POST',
@@ -27,7 +27,7 @@ const QueryButton = ({queryNumber}) => {
   return (
     <Button
       onClick={handleClick}
-      style={{marginTop: '1rem', width: '100%'}}
+      style={{ marginTop: '1rem', width: '100%' }}
       size="lg">
       {`Execute Q${queryNumber} Query`}
     </Button>

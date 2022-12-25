@@ -1,8 +1,6 @@
 const express = require('express');
 const app = express();
 
-app.get('/foo', (req, res) => res.send('Hello world!'));
-
 const postgres = require('./postgres');
 const lib = require('./lib');
 

@@ -86,4 +86,84 @@ const getOverlapResult = shifts => {
   return result;
 };
 
-module.exports = {getOverlapResult};
+const query4 =
+  'SELECT \
+    J.FACILITY_ID, \
+    J.JOB_ID, \
+    J.NURSE_TYPE_NEEDED, \
+    COUNT(\
+      (J.FACILITY_ID, J.JOB_ID)\
+    ) AS TOTAL_HIRED, \
+    J.TOTAL_NUMBER_NURSES_NEEDED, \
+    (\
+      J.TOTAL_NUMBER_NURSES_NEEDED - COUNT(\
+        (J.JOB_ID, J.FACILITY_ID)\
+      )\
+    ) AS REMAINING_SPOTS \
+  FROM \
+    JOBS AS J \
+    LEFT JOIN NURSE_HIRED_JOBS AS NHJ ON J.JOB_ID = NHJ.JOB_ID \
+    INNER JOIN NURSES AS N ON N.NURSE_ID = NHJ.NURSE_ID \
+  WHERE \
+    J.NURSE_TYPE_NEEDED = N.NURSE_TYPE \
+  GROUP BY \
+    J.FACILITY_ID, \
+    J.JOB_ID \
+  ORDER BY \
+    J.FACILITY_ID, \
+    J.JOB_ID';
+
+const query5 =
+  'SELECT \
+      N2.NURSE_ID, \
+      N2.NURSE_NAME, \
+      N2.NURSE_TYPE, \
+      COUNT(N2.NURSE_ID) AS TOTAL_JOBS \
+  FROM \
+    NURSES AS N2 \
+    LEFT JOIN JOBS AS J2 ON N2.NURSE_TYPE = J2.NURSE_TYPE_NEEDED \
+    AND J2.JOB_ID IN (\
+      SELECT \
+        T1.JOB_ID AS T1_JOB_ID \
+      FROM \
+        (\
+          SELECT \
+            J.JOB_ID, \
+            J.NURSE_TYPE_NEEDED, \
+            (\
+              J.TOTAL_NUMBER_NURSES_NEEDED - COUNT(\
+                (J.JOB_ID, J.FACILITY_ID)\
+              )\
+            ) AS REMAINING_SPOTS \
+          FROM \
+            JOBS AS J \
+            LEFT JOIN NURSE_HIRED_JOBS AS NHJ ON J.JOB_ID = NHJ.JOB_ID \
+            INNER JOIN NURSES AS N ON N.NURSE_ID = NHJ.NURSE_ID \
+          WHERE \
+            J.NURSE_TYPE_NEEDED = N.NURSE_TYPE \
+          GROUP BY \
+            J.FACILITY_ID, \
+            J.JOB_ID \
+          ORDER BY \
+            J.JOB_ID\
+        ) AS T1 \
+      WHERE \
+        T1.REMAINING_SPOTS != 0\
+    ) \
+    AND J2.JOB_ID NOT IN (\
+      SELECT \
+        NHJ1.JOB_ID AS NHJ1_JOB_ID \
+      FROM \
+        NURSES AS N1 \
+        LEFT JOIN NURSE_HIRED_JOBS AS NHJ1 ON N1.NURSE_ID = NHJ1.NURSE_ID \
+      WHERE \
+        N1.NURSE_ID = N2.NURSE_ID \
+      ORDER BY \
+        N1.NURSE_ID\
+    ) \
+  GROUP BY \
+    N2.NURSE_ID \
+  ORDER BY \
+    N2.NURSE_ID';
+
+module.exports = { getOverlapResult, query4, query5 };

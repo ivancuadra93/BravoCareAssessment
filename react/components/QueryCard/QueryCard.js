@@ -7,13 +7,13 @@ import QueryButton from '../QueryButton/QueryButton';
 
 const QueryCard = () => {
   return (
-    <Card bg={'light'} style={{marginTop: '1rem'}}>
-      <Card.Title style={{alignSelf: 'center', marginTop: '1rem'}}>
+    <Card bg={'light'} style={{ marginTop: '1rem' }}>
+      <Card.Title style={{ alignSelf: 'center', marginTop: '1rem' }}>
         Queries
       </Card.Title>
       <Card.Body>
         <Row sm={1} md={3}>
-          {Array.from({length: 3}).map((_, idx) => (
+          {Array.from({ length: 3 }).map((_, idx) => (
             <Col key={idx.toString()}>
               <QueryButton queryNumber={idx + 4}></QueryButton>
             </Col>
