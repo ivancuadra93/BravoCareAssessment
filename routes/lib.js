@@ -72,9 +72,9 @@ const getOverlapResult = shifts => {
     (60 * 1000);
 
   if (shifts[0].facility_id === shifts[1].facility_id) {
-    result.maxThreshold = 0;
-  } else {
     result.maxThreshold = 30;
+  } else {
+    result.maxThreshold = 0;
   }
 
   if (result.overlapMin > result.maxThreshold) {
