@@ -166,4 +166,69 @@ const query5 =
   ORDER BY \
     N2.NURSE_ID';
 
-module.exports = { getOverlapResult, query4, query5 };
+const query6 =
+  'SELECT \
+    DISTINCT N3.NURSE_NAME AS CO_WORKER_NAME \
+  FROM \
+    NURSES AS N3 \
+    INNER JOIN (\
+      SELECT \
+        NHJ2.NURSE_ID AS NHJ2_NURSE_ID \
+      FROM \
+        NURSE_HIRED_JOBS AS NHJ2 \
+        INNER JOIN (\
+          SELECT \
+            J2.JOB_ID AS J2_JOB_ID \
+          FROM \
+            JOBS AS J2 \
+            INNER JOIN (\
+              SELECT \
+                DISTINCT J1.FACILITY_ID AS J1_FACILITY_ID \
+              FROM \
+                NURSE_HIRED_JOBS AS NHJ1 \
+                INNER JOIN JOBS AS J1 ON NHJ1.JOB_ID = J1.JOB_ID \
+              WHERE \
+                NHJ1.NURSE_ID = ($1)\
+            ) AS T1 ON J2.FACILITY_ID = T1.J1_FACILITY_ID\
+        ) AS T2 ON NHJ2.JOB_ID = T2.J2_JOB_ID\
+    ) AS T3 ON N3.NURSE_ID = T3.NHJ2_NURSE_ID \
+    AND N3.NURSE_ID != ($1)';
+
+// alternate query for query6
+/* SELECT 
+      N2.NURSE_NAME AS CO_WORKER_NAME 
+    FROM 
+      NURSES AS N2 
+    WHERE 
+      N2.NURSE_ID IN (
+        SELECT 
+          DISTINCT NHJ2.NURSE_ID AS NHJ2_NURSE_ID 
+        FROM 
+          NURSE_HIRED_JOBS AS NHJ2 
+        WHERE 
+          NHJ2.JOB_ID IN (
+            SELECT 
+              J2.JOB_ID AS J2_JOB_ID 
+            FROM 
+              JOBS AS J2 
+            WHERE 
+              J2.FACILITY_ID IN (
+                SELECT 
+                  J1.FACILITY_ID AS J1_FACILITY_ID 
+                FROM 
+                  JOBS AS J1 
+                WHERE 
+                  JOB_ID IN (
+                    SELECT 
+                      NHJ1.JOB_ID AS NHJ1_JOB_ID 
+                    FROM 
+                      NURSE_HIRED_JOBS AS NHJ1 
+                    WHERE 
+                      NHJ1.NURSE_ID = 1001
+                  )
+              )
+          ) 
+          AND NHJ2.NURSE_ID != 1001
+      ) */
+
+module.exports = { getOverlapResult, query4, query5, query6 };

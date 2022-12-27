@@ -54,6 +54,7 @@ const getQuery = body => {
     const { queryNumber } = body;
 
     let query = '';
+    let values = [];
 
     switch (queryNumber) {
       case 4:
@@ -65,13 +66,15 @@ const getQuery = body => {
         break;
 
       case 6:
+        query = lib.query6;
+        values = [1001];
         break;
 
       default:
         break;
     }
 
-    pool.query(query, (error, results) => {
+    pool.query(query, values, (error, results) => {
       if (error) {
         reject(error);
       }
