@@ -16,6 +16,7 @@ const ShiftCard = ({ disabled, addChecks, shiftKey, shiftData }) => {
   }, [checked]);
 
   const formattedTime = time => {
+    // console.log(time);
     let timeArr = time.split(':');
     timeArr.pop();
     let timeSuffix = ''; // used for am or pm
@@ -28,7 +29,7 @@ const ShiftCard = ({ disabled, addChecks, shiftKey, shiftData }) => {
     }
 
     // convert 24 hh to 12 hh
-    timeArr[0] = ((timeArr[0] + 11) % 12) + 1;
+    timeArr[0] = ((Number(timeArr[0]) + 11) % 12) + 1;
 
     return `${timeArr.join(':')}  ${timeSuffix}`;
   };
